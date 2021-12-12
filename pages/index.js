@@ -5,8 +5,8 @@ import { ethers } from 'ethers'
 import Greeter from '../artifacts/contracts/Greeter.sol/Greeter.json'
 import Token from '../artifacts/contracts/Token.sol/Token.json'
 
-const greeterAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3'
-const tokenAddress = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'
+const greeterAddress = '0x8Cdb2Ab9C7F6019787ed1878EB05D1467E48Ab83'
+const tokenAddress = '0xbb0c8942e03542E2eB28F49F1763412caC0C50f3'
 
 export default function Home() {
   const [greetingValue, setGreetingValue] = useState('')
@@ -38,27 +38,24 @@ export default function Home() {
 
   // call the smart contract, send an update
   async function setGreeting() {
-    if (!greetingValue) return
-    if (typeof window.ethereum !== 'undefined') {
-      await requestAccount()
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner()
-      const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer)
-      const transaction = await contract.setGreeting(greetingValue)
-      await transaction.wait()
-      setGreetingValue('')
-      fetchGreeting()
-    }
+    if (!greetingValue || !window.ethereum) return
+    await requestAccount()
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer)
+    const transaction = await contract.setGreeting(greetingValue)
+    await transaction.wait()
+    setGreetingValue('')
+    fetchGreeting()
   }
 
   // get current user token balance
   async function getBalance() {
-    if (typeof window.ethereum === 'undefined') {
-      return
-    }
+    if (!window.ethereum) return
     const [account] = await window.ethereum.request({
       method: 'eth_requestAccounts',
     })
+    console.log('Getting balance for account: ', account)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const contract = new ethers.Contract(tokenAddress, Token.abi, provider)
     const balance = await contract.balanceOf(account)
@@ -67,9 +64,7 @@ export default function Home() {
 
   // send token to another user
   async function sendTokens() {
-    if (typeof window.ethereum === 'undefined') {
-      return
-    }
+    if (!amount || !window.ethereum) return
     console.log(`Sending ${amount} tokens to account ${userAccount} ...`)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()

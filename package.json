@@ -3,9 +3,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build:frontend": "next build",
+    "build:contracts": "hardhat compile",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "eth-server": "hardhat node",
+    "deploy:localhost": "hardhat run scripts/deploy.js --network localhost",
+    "deploy:ropsten": "hardhat run scripts/deploy.js --network ropsten"
   },
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.3",
