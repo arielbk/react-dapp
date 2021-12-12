@@ -167,7 +167,7 @@ export default function Home() {
                 </Box>
               </InputLeftElement>
               <Input
-                onClick={(e) => setGreetingValue(e.target.value)}
+                onChange={(e) => setGreetingValue(e.target.value)}
                 placeholder="Greeting text"
               />
             </InputGroup>
@@ -223,7 +223,7 @@ export default function Home() {
                 </Box>
               </InputLeftElement>
               <Input
-                onClick={(e) => setAmount(e.target.value)}
+                onChange={(e) => setAmount(e.target.value)}
                 placeholder="Number of abk tokens"
               />
             </InputGroup>
