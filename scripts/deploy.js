@@ -10,6 +10,11 @@ async function main() {
   const token = await Token.deploy()
   await greeter.deployed()
   console.log('Token deployed to:', token.address)
+
+  const ReactToken = await hre.ethers.getContractFactory('ReactToken')
+  const reactToken = await ReactToken.deploy()
+  await reactToken.deployed()
+  console.log('React Token deployed to:', token.address)
 }
 
 main()
