@@ -1,26 +1,28 @@
 import {
+  Box,
+  Button,
   Flex,
   Heading,
   IconButton,
   Input,
+  InputGroup,
+  InputLeftElement,
   Stack,
-  useTheme,
+  useColorMode,
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import Head from 'next/head'
-import { useState, useEffect } from 'react'
-import { Button, Box } from '@chakra-ui/react'
-import { useColorMode, InputLeftElement, InputGroup } from '@chakra-ui/react'
-import Greeter from '../artifacts/contracts/Greeter.sol/Greeter.json'
-import Token from '../artifacts/contracts/Token.sol/Token.json'
-import styles from '../styles/Home.module.css'
-import { BsMoonFill, BsFillSunFill } from 'react-icons/bs'
-import { MdOutlineAccountCircle } from 'react-icons/md'
+import { useEffect, useState } from 'react'
 import { BiCoin, BiMessageRounded } from 'react-icons/bi'
+import { BsFillSunFill, BsMoonFill } from 'react-icons/bs'
 import { GiWavyChains } from 'react-icons/gi'
+import { MdOutlineAccountCircle } from 'react-icons/md'
+import Greeter from '../artifacts/contracts/Greeter.sol/Greeter.json'
+import Token from '../artifacts/contracts/ReactToken.sol/ReactToken.json'
+import styles from '../styles/Home.module.css'
 
 const greeterAddress = '0x8Cdb2Ab9C7F6019787ed1878EB05D1467E48Ab83'
-const tokenAddress = '0xbb0c8942e03542E2eB28F49F1763412caC0C50f3'
+const tokenAddress = '0xeF3f55D4C7e61094E18B455f742D06BC2F87f669'
 
 export default function Home() {
   const [chainGreeting, setChainGreeting] = useState('')
@@ -35,7 +37,6 @@ export default function Home() {
   const [isSending, setIsSending] = useState(false)
 
   const { colorMode, toggleColorMode } = useColorMode()
-  const chakraTheme = useTheme()
 
   // request access to the user's MetaMask account
   async function requestAccount() {
@@ -91,13 +92,14 @@ export default function Home() {
   async function sendTokens() {
     if (!amount || !window.ethereum) return
     setIsSending(true)
-    console.log(`Sending ${amount} tokens to account ${toAddress} ...`)
+    const wholeTokens = BigInt(amount * 10 ** 18)
+    console.log(`Sending ${wholeTokens} tokens to account ${toAddress} ...`)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const contract = new ethers.Contract(tokenAddress, Token.abi, signer)
-    const transaction = await contract.transfer(toAddress, amount)
+    const transaction = await contract.transfer(toAddress, wholeTokens)
     await transaction.wait()
-    console.log(`${amount} tokens sent to ${toAddress}`)
+    console.log(`${wholeTokens} tokens sent to ${toAddress}`)
     setIsSending(false)
   }
 
@@ -152,10 +154,10 @@ export default function Home() {
               p={4}
               textAlign={'center'}
               display="flex"
-              justifyContent="space-around"
+              justifyContent="space-between"
             >
-              <Box>Contract greeting:</Box>
-              <Box textDecoration={'underline'}>{chainGreeting}</Box>
+              <Box>Greeting:</Box>
+              <Box fontWeight="400">{chainGreeting}</Box>
             </Heading>
             <Button onClick={fetchGreeting} isLoading={isFetchingGreeting}>
               Fetch greeting
@@ -192,14 +194,14 @@ export default function Home() {
           >
             <Heading
               size="md"
-              py={4}
+              p={4}
               textAlign={'center'}
               display="flex"
-              justifyContent="space-around"
+              justifyContent="space-between"
             >
-              <Box>Token balance:</Box>
-              <Box textDecoration={'underline'}>
-                {balance || 'Get balance 👇'}
+              <Box>React tokens:</Box>
+              <Box fontWeight="400">
+                {balance ? (balance / 10 ** 18).toFixed(2) : 'Get balance 👇'}
               </Box>
             </Heading>
             <Button onClick={getBalance} isLoading={isGettingBalance}>
@@ -224,7 +226,8 @@ export default function Home() {
               </InputLeftElement>
               <Input
                 onChange={(e) => setAmount(e.target.value)}
-                placeholder="Number of abk tokens"
+                placeholder="Number of react tokens"
+                value={amount}
               />
             </InputGroup>
             <Button
