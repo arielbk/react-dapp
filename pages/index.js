@@ -10,18 +10,14 @@ import {
   Stack,
   useColorMode,
 } from '@chakra-ui/react'
-import { ethers } from 'ethers'
 import Head from 'next/head'
-import { useState } from 'react'
 import { BiCoin, BiMessageRounded } from 'react-icons/bi'
 import { BsFillSunFill, BsMoonFill } from 'react-icons/bs'
 import { GiWavyChains } from 'react-icons/gi'
 import { MdOutlineAccountCircle } from 'react-icons/md'
-import Token from '../artifacts/contracts/ReactToken.sol/ReactToken.json'
 import useGreeting from '../hooks/useGreeting'
+import useReactToken from '../hooks/useReactToken'
 import styles from '../styles/Home.module.css'
-
-const tokenAddress = '0xeF3f55D4C7e61094E18B455f742D06BC2F87f669'
 
 export default function Home() {
   const {
@@ -34,43 +30,19 @@ export default function Home() {
     isSettingGreeting,
   } = useGreeting()
 
-  const [balance, setBalance] = useState('')
-  const [isGettingBalance, setIsGettingBalance] = useState(false)
-  const [toAddress, setToAddress] = useState('')
-  const [amount, setAmount] = useState(0)
-  const [isSending, setIsSending] = useState(false)
+  const {
+    getBalance,
+    balance,
+    isFetchingBalance,
+    toAddress,
+    setToAddress,
+    amount,
+    setAmount,
+    isSending,
+    sendTokens,
+  } = useReactToken()
 
   const { colorMode, toggleColorMode } = useColorMode()
-
-  // get current user token balance
-  async function getBalance() {
-    if (!window.ethereum) return
-    setIsGettingBalance(true)
-    const [account] = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    })
-    console.log('Getting balance for account: ', account)
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const contract = new ethers.Contract(tokenAddress, Token.abi, provider)
-    const balance = await contract.balanceOf(account)
-    setBalance(balance.toString())
-    setIsGettingBalance(false)
-  }
-
-  // send token to another user
-  async function sendTokens() {
-    if (!amount || !window.ethereum) return
-    setIsSending(true)
-    const wholeTokens = BigInt(amount * 10 ** 18)
-    console.log(`Sending ${wholeTokens} tokens to account ${toAddress} ...`)
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
-    const contract = new ethers.Contract(tokenAddress, Token.abi, signer)
-    const transaction = await contract.transfer(toAddress, wholeTokens)
-    await transaction.wait()
-    console.log(`${wholeTokens} tokens sent to ${toAddress}`)
-    setIsSending(false)
-  }
 
   return (
     <div className={styles.container}>
@@ -170,7 +142,7 @@ export default function Home() {
                 {balance ? (balance / 10 ** 18).toFixed(2) : 'Get balance 👇'}
               </Box>
             </Heading>
-            <Button onClick={getBalance} isLoading={isGettingBalance}>
+            <Button onClick={getBalance} isLoading={isFetchingBalance}>
               Get balance
             </Button>
             <InputGroup>
@@ -182,6 +154,7 @@ export default function Home() {
               <Input
                 onChange={(e) => setToAddress(e.target.value)}
                 placeholder="To account"
+                value={toAddress}
               />
             </InputGroup>
             <InputGroup>
