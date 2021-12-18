@@ -1,15 +1,18 @@
-# Basic Sample Hardhat Project
+# React dApp demo
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+Building off of Nader Dabit's fullstack ethereum development article
 
-Try running some of the following tasks:
+[https://dev.to/dabit3/the-complete-guide-to-full-stack-ethereum-development-3j13](https://dev.to/dabit3/the-complete-guide-to-full-stack-ethereum-development-3j13)
+[https://www.youtube.com/watch?v=a0osIaAOFSE](https://www.youtube.com/watch?v=a0osIaAOFSE)
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+Trying out blockchain development workflow by building a basic decentralized app.
+
+## Prerequisites
+
+Metamask Chrome extension to connect to your Ethereum wallet
+
+## Tech Stack
+
+- Hardhat as the Ethereum development environment
+- ethers.js as the client library for interacting with the Ethereum blockchain
+- Next.js as the React framework for the frontend
