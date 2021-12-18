@@ -15,7 +15,7 @@ async function main() {
   const ReactToken = await hre.ethers.getContractFactory('ReactToken')
   const reactToken = await ReactToken.deploy()
   await reactToken.deployed()
-  console.log('React Token deployed to:', token.address)
+  console.log('React Token deployed to:', reactToken.address)
 }
 
 main()
