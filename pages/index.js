@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react'
 import Head from 'next/head'
 import { BiCoin, BiMessageRounded } from 'react-icons/bi'
-import { BsFillSunFill, BsMoonFill } from 'react-icons/bs'
+import { BsFillSunFill, BsGithub, BsMoonFill } from 'react-icons/bs'
 import { GiWavyChains } from 'react-icons/gi'
 import { MdOutlineAccountCircle } from 'react-icons/md'
 import useGreeting from '../hooks/useGreeting'
@@ -69,10 +69,16 @@ export default function Home() {
             </Box>
             React dApp
           </Heading>
-          <IconButton
-            icon={colorMode === 'light' ? <BsFillSunFill /> : <BsMoonFill />}
-            onClick={toggleColorMode}
-          />
+          <Box>
+            <a href="https://github.com/arielbk/react-dapp">
+              <IconButton icon={<BsGithub />} aria-label="Github" mr={4} />
+            </a>
+            <IconButton
+              icon={colorMode === 'light' ? <BsFillSunFill /> : <BsMoonFill />}
+              onClick={toggleColorMode}
+              aria-label="Toggle dark mode"
+            />
+          </Box>
         </Flex>
         <Stack spacing={4} width="100%" maxWidth="500px">
           <Stack
@@ -80,10 +86,15 @@ export default function Home() {
             p={4}
             borderRadius={12}
             spacing={4}
+            boxShadow={`0 0px 1px rgba(${
+              colorMode === 'light' ? '0,0,0' : '255,255,255'
+            },0.1)`}
             _hover={{
-              boxShadow: '0 5px 30px rgba(0,0,0,0.1)',
-              transition: '0.3s',
+              boxShadow: `0 5px 30px rgba(${
+                colorMode === 'light' ? '0,0,0' : '255,255,255'
+              },0.1)`,
             }}
+            transition="0.3s"
           >
             <Heading
               size="md"
@@ -125,10 +136,15 @@ export default function Home() {
             p={4}
             spacing={4}
             borderRadius={12}
+            boxShadow={`0 0px 1px rgba(${
+              colorMode === 'light' ? '0,0,0' : '255,255,255'
+            },0.1)`}
             _hover={{
-              boxShadow: '0 5px 30px rgba(0,0,0,0.1)',
-              transition: '0.3s',
+              boxShadow: `0 5px 30px rgba(${
+                colorMode === 'light' ? '0,0,0' : '255,255,255'
+              },0.1)`,
             }}
+            transition="0.3s"
           >
             <Heading
               size="md"
