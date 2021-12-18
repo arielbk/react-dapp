@@ -12,23 +12,27 @@ import {
 } from '@chakra-ui/react'
 import { ethers } from 'ethers'
 import Head from 'next/head'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { BiCoin, BiMessageRounded } from 'react-icons/bi'
 import { BsFillSunFill, BsMoonFill } from 'react-icons/bs'
 import { GiWavyChains } from 'react-icons/gi'
 import { MdOutlineAccountCircle } from 'react-icons/md'
-import Greeter from '../artifacts/contracts/Greeter.sol/Greeter.json'
 import Token from '../artifacts/contracts/ReactToken.sol/ReactToken.json'
+import useGreeting from '../hooks/useGreeting'
 import styles from '../styles/Home.module.css'
 
-const greeterAddress = '0x8Cdb2Ab9C7F6019787ed1878EB05D1467E48Ab83'
 const tokenAddress = '0xeF3f55D4C7e61094E18B455f742D06BC2F87f669'
 
 export default function Home() {
-  const [chainGreeting, setChainGreeting] = useState('')
-  const [isFetchingGreeting, setIsFetchingGreeting] = useState(false)
-  const [greetingValue, setGreetingValue] = useState('')
-  const [isSettingGreeting, setIsSettingGreeting] = useState(false)
+  const {
+    chainGreeting,
+    fetchGreeting,
+    greetingValue,
+    setGreetingValue,
+    isFetchingGreeting,
+    setGreeting,
+    isSettingGreeting,
+  } = useGreeting()
 
   const [balance, setBalance] = useState('')
   const [isGettingBalance, setIsGettingBalance] = useState(false)
@@ -37,41 +41,6 @@ export default function Home() {
   const [isSending, setIsSending] = useState(false)
 
   const { colorMode, toggleColorMode } = useColorMode()
-
-  // request access to the user's MetaMask account
-  async function requestAccount() {
-    await window.ethereum.request({ method: 'eth_requestAccounts' })
-  }
-
-  // call the smart contract, read the current greeting value
-  async function fetchGreeting() {
-    if (!window.ethereum) return
-    setIsFetchingGreeting(true)
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const contract = new ethers.Contract(greeterAddress, Greeter.abi, provider)
-    try {
-      const data = await contract.greet()
-      setChainGreeting(data)
-      setIsFetchingGreeting(false)
-    } catch (err) {
-      console.log('Error: ', err)
-      setIsFetchingGreeting(false)
-    }
-  }
-
-  // call the smart contract, send an update
-  async function setGreeting() {
-    if (!greetingValue || !window.ethereum) return
-    setIsSettingGreeting(true)
-    await requestAccount()
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
-    const contract = new ethers.Contract(greeterAddress, Greeter.abi, signer)
-    const transaction = await contract.setGreeting(greetingValue)
-    await transaction.wait()
-    setGreetingValue('')
-    setIsSettingGreeting(false)
-  }
 
   // get current user token balance
   async function getBalance() {
@@ -102,11 +71,6 @@ export default function Home() {
     console.log(`${wholeTokens} tokens sent to ${toAddress}`)
     setIsSending(false)
   }
-
-  // fetch initial greeting on load
-  useEffect(() => {
-    fetchGreeting()
-  }, [])
 
   return (
     <div className={styles.container}>
@@ -170,7 +134,9 @@ export default function Home() {
               </InputLeftElement>
               <Input
                 onChange={(e) => setGreetingValue(e.target.value)}
+                value={greetingValue}
                 placeholder="Greeting text"
+                disabled={isSettingGreeting}
               />
             </InputGroup>
             <Button
