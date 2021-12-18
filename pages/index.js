@@ -92,13 +92,14 @@ export default function Home() {
   async function sendTokens() {
     if (!amount || !window.ethereum) return
     setIsSending(true)
-    console.log(`Sending ${amount} tokens to account ${toAddress} ...`)
+    const wholeTokens = BigInt(amount * 10 ** 18)
+    console.log(`Sending ${wholeTokens} tokens to account ${toAddress} ...`)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
     const contract = new ethers.Contract(tokenAddress, Token.abi, signer)
-    const transaction = await contract.transfer(toAddress, amount)
+    const transaction = await contract.transfer(toAddress, wholeTokens)
     await transaction.wait()
-    console.log(`${amount} tokens sent to ${toAddress}`)
+    console.log(`${wholeTokens} tokens sent to ${toAddress}`)
     setIsSending(false)
   }
 
