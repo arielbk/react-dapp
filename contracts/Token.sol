@@ -4,13 +4,12 @@ pragma solidity ^0.8.0;
 import "hardhat/console.sol";
 
 contract Token {
-  string public name = "arielbk token";
-  string public symbol = "ABKT";
-  uint public totalSupply = 1000;
+  string public name = "react token";
+  string public symbol = "RCT";
   mapping (address => uint) balances;
 
   constructor() {
-    balances[msg.sender] = totalSupply;
+    balances[msg.sender] = 100;
   }
 
   function transfer(address to, uint amount) external {
@@ -23,5 +22,11 @@ contract Token {
   function balanceOf(address account) external view returns (uint) {
     console.log("balanceOf", account);
     return balances[account];
+  }
+
+  function claimTokens() external {
+    console.log("claimTokens");
+    require(balances[msg.sender] == 0, "No tokens to claim");
+    balances[msg.sender] = 100;
   }
 }

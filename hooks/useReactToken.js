@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { ethers } from 'ethers'
-import Token from '../artifacts/contracts/ReactToken.sol/ReactToken.json'
+import Token from '../artifacts/contracts/Token.sol/Token.json'
 
-const tokenAddress = '0xeF3f55D4C7e61094E18B455f742D06BC2F87f669'
+const tokenAddress = '0xd6021EEFA6acFaEFEaC7F735fFBAeB5D2E70084D'
 
 export default function useReactToken() {
   const [balance, setBalance] = useState('')
@@ -10,6 +10,7 @@ export default function useReactToken() {
   const [toAddress, setToAddress] = useState('')
   const [amount, setAmount] = useState(0)
   const [isSending, setIsSending] = useState(false)
+  const [isClaiming, setIsClaiming] = useState(false)
 
   // get current user token balance
   async function getBalance() {
@@ -41,6 +42,23 @@ export default function useReactToken() {
     setIsSending(false)
   }
 
+  async function claimTokens() {
+    if (!window.ethereum) return
+    setIsClaiming(true)
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      console.log(`Sending tokens to account ${signer} ...`)
+      const contract = new ethers.Contract(tokenAddress, Token.abi, signer)
+      const transaction = await contract.claimTokens()
+      await transaction.wait()
+      console.log('Tokens claimed')
+    } catch (err) {
+      console.error(err)
+    }
+    setIsClaiming(false)
+  }
+
   return {
     getBalance,
     balance,
@@ -51,5 +69,7 @@ export default function useReactToken() {
     setAmount,
     isSending,
     sendTokens,
+    claimTokens,
+    isClaiming,
   }
 }

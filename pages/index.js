@@ -40,6 +40,8 @@ export default function Home() {
     setAmount,
     isSending,
     sendTokens,
+    claimTokens,
+    isClaiming,
   } = useReactToken()
 
   const { colorMode, toggleColorMode } = useColorMode()
@@ -80,8 +82,9 @@ export default function Home() {
             />
           </Box>
         </Flex>
+
         <Stack spacing={4} width="100%" maxWidth="500px">
-          <Stack
+          {/* <Stack
             borderWidth={1}
             p={4}
             borderRadius={12}
@@ -130,7 +133,7 @@ export default function Home() {
             >
               Set greeting
             </Button>
-          </Stack>
+          </Stack> */}
           <Stack
             borderWidth={1}
             p={4}
@@ -154,14 +157,12 @@ export default function Home() {
               justifyContent="space-between"
             >
               <Box>React tokens:</Box>
-              <Box fontWeight="400">
-                {balance ? (balance / 10 ** 18).toFixed(2) : 'Get balance 👇'}
-              </Box>
+              <Box fontWeight="400">{balance || 'Get balance 👇'}</Box>
             </Heading>
             <Button onClick={getBalance} isLoading={isFetchingBalance}>
               Get balance
             </Button>
-            <InputGroup>
+            {/* <InputGroup>
               <InputLeftElement pointerEvents="none">
                 <Box fontSize="1.3rem" opacity="0.3">
                   <MdOutlineAccountCircle />
@@ -184,14 +185,14 @@ export default function Home() {
                 placeholder="Number of react tokens"
                 value={amount}
               />
-            </InputGroup>
+            </InputGroup> */}
             <Button
-              onClick={sendTokens}
-              isLoading={isSending}
+              onClick={claimTokens}
+              isLoading={isClaiming}
               colorScheme="blue"
               variant={'outline'}
             >
-              Send tokens
+              Claim tokens
             </Button>
           </Stack>
         </Stack>
