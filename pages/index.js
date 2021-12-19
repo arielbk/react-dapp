@@ -4,17 +4,16 @@ import {
   Flex,
   Heading,
   IconButton,
-  Input,
-  InputGroup,
-  InputLeftElement,
   Stack,
   useColorMode,
 } from '@chakra-ui/react'
+import { ethers } from 'ethers'
 import Head from 'next/head'
-import { BiCoin, BiMessageRounded } from 'react-icons/bi'
+import { useCallback, useEffect, useState } from 'react'
+import { BiNetworkChart } from 'react-icons/bi'
 import { BsFillSunFill, BsGithub, BsMoonFill } from 'react-icons/bs'
 import { GiWavyChains } from 'react-icons/gi'
-import { MdOutlineAccountCircle } from 'react-icons/md'
+import Error from '../components/Error'
 import useGreeting from '../hooks/useGreeting'
 import useReactToken from '../hooks/useReactToken'
 import styles from '../styles/Home.module.css'
@@ -45,6 +44,29 @@ export default function Home() {
   } = useReactToken()
 
   const { colorMode, toggleColorMode } = useColorMode()
+  const [isCorrectNetwork, setIsCorrectNetwork] = useState(true)
+
+  const checkNetwork = useCallback(async () => {
+    if (!window.ethereum) return
+    console.log('checks network')
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const { name } = await provider.getNetwork()
+      if (name === 'ropsten') {
+        setIsCorrectNetwork(true)
+      } else {
+        setIsCorrectNetwork(false)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }, [])
+
+  useEffect(() => {
+    checkNetwork()
+    const networkChecker = setInterval(checkNetwork, 5000)
+    return () => clearInterval(networkChecker)
+  }, [checkNetwork])
 
   return (
     <div className={styles.container}>
@@ -82,58 +104,14 @@ export default function Home() {
             />
           </Box>
         </Flex>
+        {!isCorrectNetwork && (
+          <Error>
+            <BiNetworkChart />
+            <Box ml={4}>You must connect to the Ropsten network</Box>
+          </Error>
+        )}
 
         <Stack spacing={4} width="100%" maxWidth="500px">
-          {/* <Stack
-            borderWidth={1}
-            p={4}
-            borderRadius={12}
-            spacing={4}
-            boxShadow={`0 0px 1px rgba(${
-              colorMode === 'light' ? '0,0,0' : '255,255,255'
-            },0.1)`}
-            _hover={{
-              boxShadow: `0 5px 30px rgba(${
-                colorMode === 'light' ? '0,0,0' : '255,255,255'
-              },0.1)`,
-            }}
-            transition="0.3s"
-          >
-            <Heading
-              size="md"
-              p={4}
-              textAlign={'center'}
-              display="flex"
-              justifyContent="space-between"
-            >
-              <Box>Greeting:</Box>
-              <Box fontWeight="400">{chainGreeting}</Box>
-            </Heading>
-            <Button onClick={fetchGreeting} isLoading={isFetchingGreeting}>
-              Fetch greeting
-            </Button>
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <Box fontSize="1.3rem" opacity="0.3">
-                  <BiMessageRounded />
-                </Box>
-              </InputLeftElement>
-              <Input
-                onChange={(e) => setGreetingValue(e.target.value)}
-                value={greetingValue}
-                placeholder="Greeting text"
-                disabled={isSettingGreeting}
-              />
-            </InputGroup>
-            <Button
-              onClick={setGreeting}
-              isLoading={isSettingGreeting}
-              colorScheme={'blue'}
-              variant={'outline'}
-            >
-              Set greeting
-            </Button>
-          </Stack> */}
           <Stack
             borderWidth={1}
             p={4}
@@ -159,38 +137,19 @@ export default function Home() {
               <Box>React tokens:</Box>
               <Box fontWeight="400">{balance || 'Get balance 👇'}</Box>
             </Heading>
-            <Button onClick={getBalance} isLoading={isFetchingBalance}>
+            <Button
+              onClick={getBalance}
+              isLoading={isFetchingBalance}
+              disabled={!isCorrectNetwork || isFetchingBalance}
+            >
               Get balance
             </Button>
-            {/* <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <Box fontSize="1.3rem" opacity="0.3">
-                  <MdOutlineAccountCircle />
-                </Box>
-              </InputLeftElement>
-              <Input
-                onChange={(e) => setToAddress(e.target.value)}
-                placeholder="To account"
-                value={toAddress}
-              />
-            </InputGroup>
-            <InputGroup>
-              <InputLeftElement pointerEvents="none">
-                <Box fontSize="1.3rem" opacity="0.3">
-                  <BiCoin />
-                </Box>
-              </InputLeftElement>
-              <Input
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="Number of react tokens"
-                value={amount}
-              />
-            </InputGroup> */}
             <Button
               onClick={claimTokens}
               isLoading={isClaiming}
               colorScheme="blue"
               variant={'outline'}
+              disabled={!isCorrectNetwork || isClaiming}
             >
               Claim tokens
             </Button>

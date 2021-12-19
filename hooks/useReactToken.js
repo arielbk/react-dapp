@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { ethers } from 'ethers'
+import { useState } from 'react'
 import Token from '../artifacts/contracts/Token.sol/Token.json'
 
 const tokenAddress = '0xd6021EEFA6acFaEFEaC7F735fFBAeB5D2E70084D'
