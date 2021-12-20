@@ -12,6 +12,7 @@ export default function useReactToken() {
   const [amount, setAmount] = useState(0)
   const [isSending, setIsSending] = useState(false)
   const [isClaiming, setIsClaiming] = useState(false)
+  const [votes, setVotes] = useState({ ultraviolet: 0, neonblue: 0 })
 
   // get current user token balance
   async function getBalance() {
@@ -66,7 +67,7 @@ export default function useReactToken() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const contract = new ethers.Contract(surveyAddress, Survey.abi, provider)
     const votes = await contract.getVotes()
-    console.log({ ultraviolet: Number(votes[0]), blue: Number(votes[1]) })
+    setVotes({ ultraviolet: Number(votes[0]), neonblue: Number(votes[1]) })
   }
 
   async function castVote(color) {
@@ -95,5 +96,6 @@ export default function useReactToken() {
     isClaiming,
     getVotes,
     castVote,
+    votes,
   }
 }
