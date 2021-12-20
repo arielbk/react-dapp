@@ -66,21 +66,20 @@ export default function useReactToken() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const contract = new ethers.Contract(surveyAddress, Survey.abi, provider)
     const votes = await contract.getVotes()
-    console.log(votes)
+    console.log({ ultraviolet: Number(votes[0]), blue: Number(votes[1]) })
   }
 
   async function castVote(color) {
     if (!window.ethereum) return
-    let colorCode = 0
-    if (color === 'ultraviolet') colorCode = 1
+    let colorCode = 1
+    if (color === 'ultraviolet') colorCode = 0
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const contract = new ethers.Contract(surveyAddress, Survey.abi, provider)
+    const signer = provider.getSigner()
+    const contract = new ethers.Contract(surveyAddress, Survey.abi, signer)
     const vote = await contract.vote(colorCode)
     await vote.wait()
     console.log(vote)
   }
-
-  getVotes()
 
   return {
     getBalance,

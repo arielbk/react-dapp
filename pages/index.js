@@ -26,8 +26,15 @@ const VoteButton = ({ onClick, color, text }) => {
 }
 
 export default function Home() {
-  const { getBalance, balance, isFetchingBalance, claimTokens, isClaiming } =
-    useReactToken()
+  const {
+    getBalance,
+    balance,
+    isFetchingBalance,
+    claimTokens,
+    isClaiming,
+    getVotes,
+    castVote,
+  } = useReactToken()
 
   const { colorMode, toggleColorMode } = useColorMode()
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(true)
@@ -158,15 +165,10 @@ export default function Home() {
             justifyContent="space-between"
           >
             <Flex justifyContent={'space-around'}>
-              <VoteButton
-                onClick={console.log('ultraviolet')}
-                text="ultraviolet"
-              />
-              <VoteButton
-                onClick={console.log('ultraviolet')}
-                text="neonblue"
-              />
+              <VoteButton onClick={() => castVote(0)} text="ultraviolet" />
+              <VoteButton onClick={() => castVote(1)} text="neonblue" />
             </Flex>
+            <Button onClick={getVotes}>Get votes</Button>
           </Stack>
         </Stack>
       </main>
