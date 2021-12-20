@@ -14,34 +14,20 @@ import { BiNetworkChart } from 'react-icons/bi'
 import { BsFillSunFill, BsGithub, BsMoonFill } from 'react-icons/bs'
 import { GiWavyChains } from 'react-icons/gi'
 import Error from '../components/Error'
-import useGreeting from '../hooks/useGreeting'
 import useReactToken from '../hooks/useReactToken'
 import styles from '../styles/Home.module.css'
 
-export default function Home() {
-  const {
-    chainGreeting,
-    fetchGreeting,
-    greetingValue,
-    setGreetingValue,
-    isFetchingGreeting,
-    setGreeting,
-    isSettingGreeting,
-  } = useGreeting()
+const VoteButton = ({ onClick, color, text }) => {
+  return (
+    <Button onClick={onClick} _hover={{ color }}>
+      {text}
+    </Button>
+  )
+}
 
-  const {
-    getBalance,
-    balance,
-    isFetchingBalance,
-    toAddress,
-    setToAddress,
-    amount,
-    setAmount,
-    isSending,
-    sendTokens,
-    claimTokens,
-    isClaiming,
-  } = useReactToken()
+export default function Home() {
+  const { getBalance, balance, isFetchingBalance, claimTokens, isClaiming } =
+    useReactToken()
 
   const { colorMode, toggleColorMode } = useColorMode()
   const [isCorrectNetwork, setIsCorrectNetwork] = useState(true)
@@ -153,6 +139,34 @@ export default function Home() {
             >
               Claim tokens
             </Button>
+          </Stack>
+          <Stack
+            borderWidth={1}
+            p={4}
+            spacing={4}
+            borderRadius={12}
+            boxShadow={`0 0px 1px rgba(${
+              colorMode === 'light' ? '0,0,0' : '255,255,255'
+            },0.1)`}
+            _hover={{
+              boxShadow: `0 5px 30px rgba(${
+                colorMode === 'light' ? '0,0,0' : '255,255,255'
+              },0.1)`,
+            }}
+            transition="0.3s"
+            display="flex"
+            justifyContent="space-between"
+          >
+            <Flex justifyContent={'space-around'}>
+              <VoteButton
+                onClick={console.log('ultraviolet')}
+                text="ultraviolet"
+              />
+              <VoteButton
+                onClick={console.log('ultraviolet')}
+                text="neonblue"
+              />
+            </Flex>
           </Stack>
         </Stack>
       </main>

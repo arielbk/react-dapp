@@ -8,6 +8,10 @@ contract Survey is Token {
     uint violetVotes = 0;
     uint blueVotes = 0;
 
+    function getVotes() public view returns (uint, uint) {
+        return (violetVotes, blueVotes);
+    }
+
     function vote(uint color) public {
         require(balances[msg.sender] > 0, "You don't have any tokens to vote");
         balances[msg.sender] -= 1;
