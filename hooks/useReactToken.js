@@ -1,8 +1,9 @@
 import { ethers } from 'ethers'
+import { useEffect } from 'react'
 import { useState } from 'react'
-import Token from '../artifacts/contracts/Token.sol/Token.json'
+import Survey from '../artifacts/contracts/Survey.sol/Survey.json'
 
-const tokenAddress = '0xd6021EEFA6acFaEFEaC7F735fFBAeB5D2E70084D'
+const surveyAddress = '0x76B2b92Ad0054919d09AA3a066eFFf4ef10B03dD'
 
 export default function useReactToken() {
   const [balance, setBalance] = useState('')
@@ -11,6 +12,7 @@ export default function useReactToken() {
   const [amount, setAmount] = useState(0)
   const [isSending, setIsSending] = useState(false)
   const [isClaiming, setIsClaiming] = useState(false)
+  const [votes, setVotes] = useState({ ultraviolet: 0, neonblue: 0 })
 
   // get current user token balance
   async function getBalance() {
@@ -21,7 +23,7 @@ export default function useReactToken() {
     })
     console.log('Getting balance for account: ', account)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const contract = new ethers.Contract(tokenAddress, Token.abi, provider)
+    const contract = new ethers.Contract(surveyAddress, Survey.abi, provider)
     const balance = await contract.balanceOf(account)
     setBalance(balance.toString())
     setIsFetchingBalance(false)
@@ -35,7 +37,7 @@ export default function useReactToken() {
     console.log(`Sending ${wholeTokens} tokens to account ${toAddress} ...`)
     const provider = new ethers.providers.Web3Provider(window.ethereum)
     const signer = provider.getSigner()
-    const contract = new ethers.Contract(tokenAddress, Token.abi, signer)
+    const contract = new ethers.Contract(surveyAddress, Survey.abi, signer)
     const transaction = await contract.transfer(toAddress, wholeTokens)
     await transaction.wait()
     console.log(`${wholeTokens} tokens sent to ${toAddress}`)
@@ -49,7 +51,7 @@ export default function useReactToken() {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const signer = provider.getSigner()
       console.log(`Sending tokens to account ${signer} ...`)
-      const contract = new ethers.Contract(tokenAddress, Token.abi, signer)
+      const contract = new ethers.Contract(surveyAddress, Survey.abi, signer)
       const transaction = await contract.claimTokens()
       await transaction.wait()
       console.log('Tokens claimed')
@@ -57,6 +59,27 @@ export default function useReactToken() {
       console.error(err)
     }
     setIsClaiming(false)
+  }
+
+  // get current votes
+  async function getVotes() {
+    if (!window.ethereum) return
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const contract = new ethers.Contract(surveyAddress, Survey.abi, provider)
+    const votes = await contract.getVotes()
+    setVotes({ ultraviolet: Number(votes[0]), neonblue: Number(votes[1]) })
+  }
+
+  async function castVote(color) {
+    if (!window.ethereum) return
+    let colorCode = 1
+    if (color === 'ultraviolet') colorCode = 0
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+    const contract = new ethers.Contract(surveyAddress, Survey.abi, signer)
+    const vote = await contract.vote(colorCode)
+    await vote.wait()
+    console.log(vote)
   }
 
   return {
@@ -71,5 +94,8 @@ export default function useReactToken() {
     sendTokens,
     claimTokens,
     isClaiming,
+    getVotes,
+    castVote,
+    votes,
   }
 }

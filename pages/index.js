@@ -13,34 +13,45 @@ import { useCallback, useEffect, useState } from 'react'
 import { BiNetworkChart } from 'react-icons/bi'
 import { BsFillSunFill, BsGithub, BsMoonFill } from 'react-icons/bs'
 import { GiWavyChains } from 'react-icons/gi'
+import { GiCircuitry } from 'react-icons/gi'
 import Error from '../components/Error'
-import useGreeting from '../hooks/useGreeting'
 import useReactToken from '../hooks/useReactToken'
 import styles from '../styles/Home.module.css'
 
-export default function Home() {
-  const {
-    chainGreeting,
-    fetchGreeting,
-    greetingValue,
-    setGreetingValue,
-    isFetchingGreeting,
-    setGreeting,
-    isSettingGreeting,
-  } = useGreeting()
+const VoteButton = ({ onClick, color, text, votes }) => {
+  return (
+    <Box my={8} textAlign="center">
+      <Button
+        variant="ghost"
+        maxHeight="auto"
+        height="auto"
+        mb={2}
+        onClick={onClick}
+        _hover={{ color }}
+        color="gray"
+      >
+        <Box fontSize="6rem">
+          <GiCircuitry />
+        </Box>
+      </Button>
+      <Box fontSize="3rem" fontWeight={'600'} color={color}>
+        {votes}
+      </Box>
+      <Box>{text}</Box>
+    </Box>
+  )
+}
 
+export default function Home() {
   const {
     getBalance,
     balance,
     isFetchingBalance,
-    toAddress,
-    setToAddress,
-    amount,
-    setAmount,
-    isSending,
-    sendTokens,
     claimTokens,
     isClaiming,
+    getVotes,
+    castVote,
+    votes,
   } = useReactToken()
 
   const { colorMode, toggleColorMode } = useColorMode()
@@ -67,6 +78,10 @@ export default function Home() {
     const networkChecker = setInterval(checkNetwork, 5000)
     return () => clearInterval(networkChecker)
   }, [checkNetwork])
+
+  useEffect(() => {
+    getVotes()
+  }, [getVotes])
 
   return (
     <div className={styles.container}>
@@ -153,6 +168,39 @@ export default function Home() {
             >
               Claim tokens
             </Button>
+          </Stack>
+          <Stack
+            borderWidth={1}
+            p={4}
+            spacing={4}
+            borderRadius={12}
+            boxShadow={`0 0px 1px rgba(${
+              colorMode === 'light' ? '0,0,0' : '255,255,255'
+            },0.1)`}
+            _hover={{
+              boxShadow: `0 5px 30px rgba(${
+                colorMode === 'light' ? '0,0,0' : '255,255,255'
+              },0.1)`,
+            }}
+            transition="0.3s"
+            display="flex"
+            justifyContent="space-between"
+          >
+            <Flex justifyContent={'space-around'}>
+              <VoteButton
+                onClick={() => castVote(0)}
+                color="#B56DEC"
+                text="Ultra Violet"
+                votes={votes?.ultraviolet}
+              />
+              <VoteButton
+                onClick={() => castVote(1)}
+                color="#58A0FF"
+                text="Neon Blue"
+                votes={votes?.neonblue}
+              />
+            </Flex>
+            <Button onClick={getVotes}>Get votes</Button>
           </Stack>
         </Stack>
       </main>
